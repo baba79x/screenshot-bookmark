@@ -64,7 +64,15 @@
       </div>`;
 
     toast.querySelector('[data-a="view"]').onclick = () => { _br.runtime.sendMessage({ action: 'openLibrary' }); dismiss(toast); };
-    toast.querySelector('[data-a="resave"]').onclick = () => { _br.runtime.sendMessage({ action: 'forceCapture', captureType }); dismiss(toast); };
+    toast.querySelector('[data-a="resave"]').onclick = () => {
+      toast.style.display = 'none';
+      const pill = document.querySelector('.sb-saved-pill');
+      if (pill) pill.style.display = 'none';
+      setTimeout(() => {
+        _br.runtime.sendMessage({ action: 'forceCapture', captureType });
+        toast.remove();
+      }, 50);
+    };
     toast.querySelector('[data-a="dismiss"]').onclick = () => dismiss(toast);
     document.body.appendChild(toast);
   }

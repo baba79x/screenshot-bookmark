@@ -285,7 +285,12 @@ async function startCapture(tab, captureType, force = false, cropRect = null) {
     if (format === 'jpeg') opts.quality = parseInt(settings.imageQuality, 10) || 90;
 
     if (captureType === 'viewport' || captureType === 'region') {
+      const hideCss = '.sb-toast, .sb-saved-pill { opacity: 0 !important; visibility: hidden !important; transition: none !important; }';
+      try { await _browser.scripting.insertCSS({ target: { tabId: tab.id }, css: hideCss }); await sleep(40); } catch(e){}
+      
       dataUrl = await _browser.tabs.captureVisibleTab(null, opts);
+      
+      try { await _browser.scripting.removeCSS({ target: { tabId: tab.id }, css: hideCss }); } catch(e){}
       
       if (captureType === 'region' && cropRect) {
         const res = await fetch(dataUrl);
