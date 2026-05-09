@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-05-09
+
+### Added
+- **Clean Capture Engine**: Automatic hiding of extension UI (toasts and indicator pills) during screenshot capture to ensure artifacts are not included in the final image.
+
+### Fixed
+- **Metadata Embedding**: Resolved `ReferenceError` and `TypeError` in Service Worker by switching from dynamic `import()` to static ES modules for `embedMetadata` logic.
+- **Permission Resilience**: Added error handling to script and CSS injection to prevent crashes on protected extension pages (e.g., `chrome-extension://`).
+- **Canvas Performance Warnings**: Eliminated "willReadFrequently" console warnings by enabling optimized 2D context configurations across the codebase.
+
+### Changed
+- Bumped version to 2.1.0 for production release.
+
 ## [2.0.0] - 2026-05-09
 
 ### Added
