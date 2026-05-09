@@ -3,6 +3,8 @@
  * Minimal, reliable capture pipeline.
  */
 
+import { embedMetadata } from '../lib/image-metadata.js';
+
 const _browser = globalThis.browser || globalThis.chrome;
 
 // ── Install ──────────────────────────────────────────────────────
@@ -96,17 +98,21 @@ _browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           const tabId = sender.tab?.id;
           if (!tabId) break;
           const dataUrl = await getTempImage(msg.tempId);
-          await _browser.scripting.insertCSS({ target: { tabId }, files: ['content/styles/annotate.css'] });
-          await _browser.scripting.executeScript({ target: { tabId }, files: ['content/annotate.js'] });
+          try {
+            await _browser.scripting.insertCSS({ target: { tabId }, files: ['content/styles/annotate.css'] });
+            await _browser.scripting.executeScript({ target: { tabId }, files: ['content/annotate.js'] });
+          } catch(e) { /* Ignore for extension pages */ }
           await sleep(80);
-          await _browser.tabs.sendMessage(tabId, {
-            action: 'openAnnotationMode',
-            tempId: msg.tempId,
-            dataUrl,
-            pageUrl: msg.pageUrl,
-            pageTitle: msg.pageTitle,
-            captureType: msg.captureType
-          });
+          try {
+            await _browser.tabs.sendMessage(tabId, {
+              action: 'openAnnotationMode',
+              tempId: msg.tempId,
+              dataUrl,
+              pageUrl: msg.pageUrl,
+              pageTitle: msg.pageTitle,
+              captureType: msg.captureType
+            });
+          } catch(e) {}
           sendResponse({ success: true });
           break;
         }
@@ -134,7 +140,6 @@ _browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           });
 
           // Re-embed metadata
-          const { embedMetadata } = await import('../lib/image-metadata.js');
           let format = entry.savedFilename.endsWith('.jpeg') || entry.savedFilename.endsWith('.jpg') ? 'jpeg' : 'png';
           
           let blobUrl;
@@ -293,7 +298,7 @@ async function startCapture(tab, captureType, force = false, cropRect = null) {
         const ch = Math.min(cropRect.h, bitmap.height - cy);
 
         const canvas = new OffscreenCanvas(cw, ch);
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
         ctx.drawImage(bitmap, cx, cy, cw, ch, 0, 0, cw, ch);
         
         const croppedBlob = await canvas.convertToBlob({ type: `image/${format}`, quality: opts.quality ? opts.quality / 100 : 1.0 });
@@ -379,14 +384,18 @@ async function startCapture(tab, captureType, force = false, cropRect = null) {
 }
 
 async function showSaveDialog(tabId, tempId, thumb, pageUrl, pageTitle, captureType, hasAnnotations) {
-  await _browser.scripting.insertCSS({ target: { tabId }, files: ['content/styles/save-dialog.css'] });
-  await _browser.scripting.executeScript({ target: { tabId }, files: ['content/save-dialog.js'] });
+  try {
+    await _browser.scripting.insertCSS({ target: { tabId }, files: ['content/styles/save-dialog.css'] });
+    await _browser.scripting.executeScript({ target: { tabId }, files: ['content/save-dialog.js'] });
+  } catch(e) { /* Ignore for extension pages */ }
   await sleep(80);
-  await _browser.tabs.sendMessage(tabId, {
-    action: 'openSaveDialog',
-    tempId, thumbnailDataUrl: thumb,
-    pageUrl, pageTitle, captureType, hasAnnotations
-  });
+  try {
+    await _browser.tabs.sendMessage(tabId, {
+      action: 'openSaveDialog',
+      tempId, thumbnailDataUrl: thumb,
+      pageUrl, pageTitle, captureType, hasAnnotations
+    });
+  } catch(e) {}
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -484,7 +493,7 @@ async function makeThumbnail(dataUrl, maxW) {
     const w = Math.round(bitmap.width * scale);
     const h = Math.round(bitmap.height * scale);
     const oc = new OffscreenCanvas(w, h);
-    oc.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+    oc.getContext('2d', { willReadFrequently: true }).drawImage(bitmap, 0, 0, w, h);
     bitmap.close();
     const out = await oc.convertToBlob({ type: 'image/jpeg', quality: 0.95 });
     const ab  = await out.arrayBuffer();

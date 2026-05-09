@@ -79,7 +79,7 @@
     bgImg.onload = () => {
       canvas.width  = bgImg.naturalWidth;
       canvas.height = bgImg.naturalHeight;
-      ctx = canvas.getContext('2d');
+      ctx = canvas.getContext('2d', { willReadFrequently: true });
       ctx.lineCap = ctx.lineJoin = 'round';
       saveState();
     };
@@ -450,7 +450,7 @@
     const tempFc = document.createElement('canvas');
     tempFc.width = canvas.width;
     tempFc.height = canvas.height;
-    const tfcCtx = tempFc.getContext('2d');
+    const tfcCtx = tempFc.getContext('2d', { willReadFrequently: true });
     
     if (bgImg.style.display !== 'none') {
         if (bgImg.style.filter === 'grayscale(100%)') tfcCtx.filter = 'grayscale(100%)';
@@ -484,7 +484,7 @@
     const tempFc = document.createElement('canvas');
     tempFc.width = canvas.width;
     tempFc.height = canvas.height;
-    const tfcCtx = tempFc.getContext('2d');
+    const tfcCtx = tempFc.getContext('2d', { willReadFrequently: true });
     
     // Draw background if not already hidden
     if (bgImg.style.display !== 'none') {
@@ -609,7 +609,7 @@
     // Bake everything onto a final canvas
     const fc = document.createElement('canvas');
     fc.width = bgImg.naturalWidth; fc.height = bgImg.naturalHeight;
-    const fctx = fc.getContext('2d');
+    const fctx = fc.getContext('2d', { willReadFrequently: true });
     
     if (bgImg.style.filter === 'grayscale(100%)') {
       fctx.filter = 'grayscale(100%)';

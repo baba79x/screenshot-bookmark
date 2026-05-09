@@ -297,7 +297,7 @@ function generateThumbnailFromDataUrl(dataUrl) {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       const max = 800;
       let w = img.width; let h = img.height;
       if (w > max || h > max) {

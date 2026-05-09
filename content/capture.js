@@ -75,7 +75,7 @@
     const canvas = document.createElement('canvas');
     canvas.width  = Math.round(width * dpr);
     canvas.height = Math.round(totalHeight * dpr);
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
     for (const seg of captures) {
       const img = await loadImg(seg.dataUrl);
