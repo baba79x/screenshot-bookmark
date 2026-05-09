@@ -12,7 +12,7 @@
 I take the security of Screenshot Bookmark seriously. If you believe you have found a security vulnerability, please follow these steps:
 
 1. **Do not** open a public GitHub issue.
-2. Please report vulnerabilities by emailing **[Your Email/Contact]**.
+2. Please report vulnerabilities by emailing **support@wegrww.tech**.
 3. I will acknowledge your report within 48 hours and provide a timeline for a fix.
 
 ### Privacy & Data Integrity

@@ -133,9 +133,8 @@ I love contributions! Whether it's a bug report, a feature request, or a pull re
 
 ## 👤 Author
 
-**Built with ❤️ by [Your Name]**
-- Twitter: [@yourusername]
-- Website: [yourwebsite.com]
+**Built with ❤️ by Rithik Raj**
+- Website: [wegrww.tech](https://wegrww.tech)
 
 ---
 
