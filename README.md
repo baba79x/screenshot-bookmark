@@ -64,10 +64,6 @@ We believe your data should belong to you. Screenshot Bookmark is built on a **l
 
 ## 🛠️ Installation & Setup
 
-### For Users (Chrome Web Store)
-1. Install from the [Chrome Web Store](#).
-2. Use the shortcut `Ctrl+Shift+S` to capture your first page.
-
 ### For Developers (Local Load)
 1. Clone this repository.
 2. Open `chrome://extensions`.
@@ -113,14 +109,6 @@ screenshot-bookmark/
 
 ---
 
-## 🗺️ Roadmap
-
-- [ ] **v2.1**: Encrypted local storage.
-- [ ] **v2.2**: AI-powered auto-tagging.
-- [ ] **v2.3**: Firefox & Safari ports.
-- [ ] **v3.0**: Optional end-to-end encrypted cloud sync.
-
----
 
 ## 🤝 Contributing
 
