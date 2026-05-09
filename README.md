@@ -13,7 +13,8 @@ Save webpages as visual bookmarks — capture, annotate, organize, and search yo
 
 <br>
 
-<img src="assets/logoo.png" alt="Screenshot Bookmark Hero" width="800" style="border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+<img width="1280" height="800" alt="All Screenshots Chrome Ext-1" src="https://github.com/user-attachments/assets/cd8fb061-7dc1-43d3-9011-873ef00186d5" />
+
 
 </div>
 
@@ -26,6 +27,7 @@ Your browser bookmarks are a graveyard of links you'll never revisit. You save a
 **Screenshot Bookmark fixes this.** Every saved page becomes a visual, annotated, searchable bookmark — stored entirely on your device. It’s like having a visual memory for everything you see on the web.
 
 ---
+<img width="1280" height="800" alt="All Screenshots Chrome Ext-3" src="https://github.com/user-attachments/assets/4c83cbc1-9149-4511-9aff-911fc7d88a6a" />
 
 ## 🚀 Key Features
 
