@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screenshot Bookmark — Settings</title>
+  <link rel="icon" type="image/svg+xml" href="../icons/logo.svg">
+  <link rel="stylesheet" href="../lib/fonts/fonts.css">
+  <link rel="stylesheet" href="settings.css">
+  <script src="../lib/browser-polyfill.js"></script>
+  <link rel="stylesheet" href="../lib/tabler-icons/tabler-icons.min.css">
+</head>
+<body>
+  <div class="settings-layout">
+    <aside class="settings-nav">
+      <div class="nav-brand"><img src="../icons/logo.svg" alt="Logo" style="width: 24px; height: 24px; border-radius: 6px;"><span>Settings</span></div>
+      <a class="nav-link active" data-section="capture"><i class="ti ti-camera"></i>Capture</a>
+      <a class="nav-link" data-section="storage"><i class="ti ti-folder"></i>Storage</a>
+      <a class="nav-link" data-section="shortcuts"><i class="ti ti-keyboard"></i>Shortcuts</a>
+      <a class="nav-link" data-section="tags"><i class="ti ti-tag"></i>Tags</a>
+      <a class="nav-link" data-section="privacy"><i class="ti ti-shield-check"></i>Privacy</a>
+      <a class="nav-link" id="navPrivacyPolicy" href="../privacy/privacy.html" style="font-size:12px; padding-left:36px; color:var(--muted);"><i class="ti ti-file-text"></i>Privacy Policy</a>
+      <a class="nav-link" data-section="danger"><i class="ti ti-alert-triangle"></i>Danger Zone</a>
+    </aside>
+
+    <main class="settings-main" id="settingsMain">
+
+      <!-- Capture -->
+      <section class="settings-section" id="sec-capture">
+        <h2>Capture</h2>
+        <div class="setting-row">
+          <label>Image format</label>
+          <select id="imageFormat">
+            <option value="png">PNG (Lossless, High Quality)</option>
+            <option value="jpeg">JPEG (Lossy, Smaller File)</option>
+          </select>
+        </div>
+        <div class="setting-row" id="jpegQualityRow" style="display:none;">
+          <label>JPEG quality (<span id="qualityValue">90</span>%)</label>
+          <input type="range" id="imageQuality" min="10" max="100" step="5" value="90" style="flex:1; max-width: 200px;">
+        </div>
+        <div class="setting-row"><label>Show save dialog (to pick folder/tags)</label><input type="checkbox" id="showSaveDialog" class="toggle" checked></div>
+        <div class="setting-row"><label>Show annotation mode after capture</label><input type="checkbox" id="showAnnotationMode" class="toggle"></div>
+        <div class="setting-row"><label>Show capture success toast</label><input type="checkbox" id="showPreviewToast" class="toggle" checked></div>
+        <div class="setting-row"><label>Toast position</label>
+          <select id="toastPosition">
+            <option value="bottom-right">Bottom right</option>
+            <option value="bottom-left">Bottom left</option>
+            <option value="top-right">Top right</option>
+          </select>
+        </div>
+        <div class="setting-row"><label>Toast auto-dismiss (ms)</label><input type="number" id="toastAutoDismiss" value="5000" min="1000" max="30000" step="1000"></div>
+      </section>
+
+      <!-- Storage -->
+      <section class="settings-section" id="sec-storage" style="display:none;">
+        <h2>Storage</h2>
+        <p class="section-desc">Screenshots are automatically saved to <strong>Downloads/Screenshot Bookmark/</strong> on your computer. This folder persists even if you clear browser data.</p>
+        <div class="info-card">
+          <i class="ti ti-folder-check"></i>
+          <div>
+            <strong>Auto-save location</strong>
+            <p>Windows: <code>C:\Users\[you]\Downloads\Screenshot Bookmark\</code></p>
+            <p>Mac: <code>/Users/[you]/Downloads/Screenshot Bookmark/</code></p>
+          </div>
+        </div>
+        <div class="setting-row"><label>Remember last folder per domain</label><input type="checkbox" id="rememberLastFolder" class="toggle" checked></div>
+        <div class="setting-row"><label>Open library in full tab</label><input type="checkbox" id="openLibraryInTab" class="toggle"></div>
+      </section>
+
+      <!-- Shortcuts -->
+      <section class="settings-section" id="sec-shortcuts" style="display:none;">
+        <h2>Keyboard Shortcuts</h2>
+        <p class="section-desc">Customize keyboard shortcuts for capture actions.</p>
+        
+        <div class="setting-row">
+          <label>Browser Default Shortcut</label>
+          <kbd>Ctrl+Shift+S</kbd>
+        </div>
+        <p class="hint" style="margin-top:-8px; margin-bottom: 20px;">To change the default browser-level shortcut, visit <code>about:addons</code> (Firefox) or <code>chrome://extensions/shortcuts</code> (Chrome)</p>
+
+        <div class="setting-row">
+          <label>Custom Web Shortcut</label>
+          <div style="display:flex; gap: 8px;">
+            <input type="text" id="customShortcut" class="sb-sd-input" style="width: 200px; text-align: center; font-weight: bold; cursor: pointer;" readonly placeholder="Click to record...">
+            <button id="clearShortcutBtn" class="btn outline" style="padding: 0 12px; font-size: 12px;">Clear</button>
+          </div>
+        </div>
+        <p class="hint" style="margin-top:-8px;">Works instantly on any web page without needing browser restarts. Click the box above and press your desired key combination.</p>
+      </section>
+
+      <!-- Tags -->
+      <section class="settings-section" id="sec-tags" style="display:none;">
+        <h2>Manage Tags</h2>
+        <p class="section-desc">Rename, merge, or delete tags across all screenshots.</p>
+        <div id="tagList" class="tag-manager-list"></div>
+      </section>
+
+      <!-- Privacy -->
+      <section class="settings-section" id="sec-privacy" style="display:none;">
+        <h2>Privacy</h2>
+        <div class="setting-row"><label>Check saved links automatically</label><input type="checkbox" id="linkCheckEnabled" class="toggle" checked></div>
+        <div class="setting-row"><label>Check frequency</label>
+          <select id="linkCheckFrequency">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="off">Off</option>
+          </select>
+        </div>
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
+          <a href="../privacy/privacy.html" style="display: inline-flex; align-items: center; gap: 8px; color: var(--primary, #378ADD); text-decoration: none; font-size: 14px; font-weight: 500;">
+            <i class="ti ti-file-text"></i> Read full Privacy Policy
+          </a>
+        </div>
+      </section>
+
+      <!-- Danger Zone -->
+      <section class="settings-section" id="sec-danger" style="display:none;">
+        <h2>Storage & Sync</h2>
+        <p class="section-desc">Manage your offline library and metadata.</p>
+        
+        <div style="padding:16px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:12px; margin-bottom:24px;">
+          <h3 style="margin:0 0 8px 0; font-size:14px;">Import Mother Folder</h3>
+          <p style="margin:0 0 16px 0; font-size:13px; color:var(--muted);">Select your physical <code>Downloads/Screenshot Bookmark</code> folder on this PC. The extension will scan all screenshots and perfectly restore their Tags, Source URLs, and Folders.</p>
+          <button id="importFolderBtn" class="btn"><i class="ti ti-folder-down"></i> Import Local Folder</button>
+          <div id="importStatus" style="margin-top:12px; font-size:12px; font-weight:500; color:var(--primary); display:none;"></div>
+        </div>
+
+        <h3 style="margin-top: 24px; color: var(--danger);">Danger Zone</h3> <p><strong>Note:</strong> Files already saved in your Downloads folder are NOT affected.</p>
+        <div class="danger-card">
+          <div><strong>Clear library index</strong><p>Removes all entries from the extension's internal library. Files in Downloads/Screenshot Bookmark/ are preserved.</p></div>
+          <button class="btn outline danger" id="clearCacheBtn">Clear library</button>
+        </div>
+        <div class="danger-card">
+          <div><strong>Delete everything</strong><p>Clears the library index AND the internal image cache. Files in Downloads are still preserved.</p></div>
+          <button class="btn outline danger" id="deleteAllBtn">Delete everything</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script type="module" src="settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="128" height="128" rx="28" fill="#F5F5F3"/>
+  <!-- Screenshot Frame -->
+  <path d="M34 46V34H46" stroke="#0A0A0A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M82 34H94V46" stroke="#0A0A0A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M94 82V94H82" stroke="#0A0A0A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M46 94H34V82" stroke="#0A0A0A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Bookmark -->
+  <path d="M52 36C52 33.7909 53.7909 32 56 32H72C74.2091 32 76 33.7909 76 36V88L64 78L52 88V36Z" fill="#2A2A2A"/>
+  <!-- Bookmark Highlight -->
+  <path d="M58 40H70" stroke="#D4D4D0" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+  <!-- Tiny Signature Circle -->
+  <circle cx="105" cy="105" r="7" stroke="#9A9A96" stroke-width="1.5" opacity="0.8"/>
+  <!-- Centered Capital G -->
+  <text x="105" y="107" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="6" font-weight="600" fill="#9A9A96" opacity="0.95">G</text>
+</svg>

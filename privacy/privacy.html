@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Screenshot Bookmark</title>
+  <link rel="icon" type="image/svg+xml" href="../icons/logo.svg">
+  <link rel="stylesheet" href="../lib/fonts/fonts.css">
+  <link rel="stylesheet" href="../lib/tabler-icons/tabler-icons.min.css">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg-elevated: #141420;
+      --text: #e4e4ed;
+      --heading: #ffffff;
+      --muted: #8888aa;
+      --border: rgba(255,255,255,0.06);
+      --accent: #378ADD;
+      --success: #1D9E75;
+      --danger: #E24B4A;
+      --radius: 12px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .privacy-page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 32px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    .page-header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-header .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .page-header .logo-row img {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+    }
+    .page-header .logo-row span {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--heading);
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--heading);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .updated {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .summary-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .summary-card .shield {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(29, 158, 117, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .summary-card .shield i {
+      font-size: 22px;
+      color: var(--success);
+    }
+    .summary-card p {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--heading);
+    }
+    .summary-card p strong {
+      color: var(--success);
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--heading);
+      margin-top: 40px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    p { margin-bottom: 12px; font-size: 14.5px; }
+
+    ul {
+      list-style: none;
+      margin-bottom: 16px;
+    }
+    ul li {
+      padding: 6px 0;
+      font-size: 14.5px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    ul li::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+
+    .no-list li { color: var(--text); }
+    .no-list li::before { background: var(--danger); }
+    .no-list li .no { color: var(--danger); font-weight: 600; margin-right: 4px; }
+
+    .perm-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 14px;
+    }
+    .perm-table th,
+    .perm-table td {
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .perm-table th {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .perm-table td:first-child {
+      font-weight: 600;
+      color: var(--heading);
+      white-space: nowrap;
+    }
+    .perm-table code {
+      background: rgba(55, 138, 221, 0.1);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .opt-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin: 16px 0 24px;
+    }
+    .opt-card .opt-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent);
+      background: rgba(55, 138, 221, 0.12);
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .opt-card p { margin: 0; font-size: 14px; color: var(--muted); }
+
+    .footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="privacy-page">
+
+    <a class="back-link" id="backLink" href="#">
+      <i class="ti ti-arrow-left"></i> Back to Settings
+    </a>
+
+    <div class="page-header">
+      <div class="logo-row">
+        <img src="../icons/logo.svg" alt="Screenshot Bookmark">
+        <span>Screenshot Bookmark</span>
+      </div>
+      <h1>Privacy Policy</h1>
+      <div class="updated">Last updated: May 9, 2026</div>
+    </div>
+
+    <p>Screenshot Bookmark is a browser extension that captures, annotates, and organizes webpage screenshots. This privacy policy explains what data the extension handles and how.</p>
+
+    <div class="summary-card">
+      <div class="shield"><i class="ti ti-shield-check"></i></div>
+      <p>Screenshot Bookmark <strong>does not collect, transmit, or sell any user data.</strong> Everything stays on your device.</p>
+    </div>
+
+    <!-- What Data is Stored -->
+    <h2>What Data is Stored</h2>
+    <p>Screenshot Bookmark stores the following data <strong>locally on your device</strong> using your browser's built-in storage:</p>
+    <ul>
+      <li><strong>Screenshot images</strong> — the webpage captures you take</li>
+      <li><strong>Metadata</strong> — page titles, URLs, capture dates, folder names, and tags you assign</li>
+      <li><strong>Thumbnails</strong> — smaller preview versions of your screenshots</li>
+      <li><strong>Settings</strong> — your personal preferences (capture mode, theme, etc.)</li>
+    </ul>
+    <p>This data is stored using:</p>
+    <ul>
+      <li><code>browser.storage.local</code> — for the screenshot index and settings</li>
+      <li><code>IndexedDB</code> — for full-resolution image data</li>
+      <li><code>Downloads</code> folder — screenshots are also saved as image files to your Downloads directory</li>
+    </ul>
+
+    <!-- What is NOT Collected -->
+    <h2>What Data is NOT Collected</h2>
+    <ul class="no-list">
+      <li><span class="no">✕</span> No personal information (name, email, account)</li>
+      <li><span class="no">✕</span> No browsing history</li>
+      <li><span class="no">✕</span> No analytics or telemetry</li>
+      <li><span class="no">✕</span> No cookies or tracking pixels</li>
+      <li><span class="no">✕</span> No data sent to external servers</li>
+      <li><span class="no">✕</span> No third-party SDKs</li>
+      <li><span class="no">✕</span> No advertising or fingerprinting</li>
+    </ul>
+
+    <!-- Optional Link Checker -->
+    <h2>Optional Broken Link Checker</h2>
+    <p>Screenshot Bookmark includes an optional feature that checks whether your saved webpage URLs are still accessible.</p>
+    <div class="opt-card">
+      <div class="opt-badge">Disabled by Default</div>
+      <p>When enabled, the extension sends lightweight HEAD requests to saved URLs approximately once per day. Only the HTTP status code is checked — no page content is downloaded. No data is sent to any third-party server. You can disable this at any time in Settings.</p>
+    </div>
+
+    <!-- Permissions -->
+    <h2>Permissions Explained</h2>
+    <table class="perm-table">
+      <thead>
+        <tr><th>Permission</th><th>Why It's Needed</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>activeTab</code></td><td>To capture a screenshot of the page you're currently viewing</td></tr>
+        <tr><td><code>tabs</code></td><td>To read the page title and URL for saving as bookmark metadata</td></tr>
+        <tr><td><code>storage</code></td><td>To save your screenshots, settings, and organizational data locally</td></tr>
+        <tr><td><code>unlimitedStorage</code></td><td>To store high-resolution screenshot images without browser limits</td></tr>
+        <tr><td><code>scripting</code></td><td>To inject the capture, annotation, and save dialog UI into the current page</td></tr>
+        <tr><td><code>downloads</code></td><td>To save screenshot image files to your Downloads folder</td></tr>
+        <tr><td><code>contextMenus</code></td><td>To add capture options to the right-click menu</td></tr>
+        <tr><td><code>alarms</code></td><td>To schedule the optional broken link checker</td></tr>
+        <tr><td><code>notifications</code></td><td>To show capture confirmation notifications</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Data Sharing -->
+    <h2>Data Sharing</h2>
+    <p>Screenshot Bookmark does <strong>not</strong> share any data with the extension developer, third parties, advertising networks, analytics services, or any external server.</p>
+
+    <!-- Data Deletion -->
+    <h2>Data Deletion</h2>
+    <p>All data stored by Screenshot Bookmark is deleted when you:</p>
+    <ul>
+      <li>Uninstall the extension</li>
+      <li>Clear your browser data</li>
+      <li>Manually delete screenshots from the Library</li>
+    </ul>
+    <p>You are in full control of your data at all times.</p>
+
+    <!-- Changes -->
+    <h2>Changes to This Policy</h2>
+    <p>If this privacy policy is updated, the changes will be noted here with a new "Last updated" date. Material changes will be communicated through the Chrome Web Store listing.</p>
+
+    <div class="footer">
+      <p>Screenshot Bookmark &middot; <a href="https://chromewebstore.google.com" target="_blank">Chrome Web Store</a></p>
+    </div>
+
+  </div>
+
+  <script src="../lib/browser-polyfill.js"></script>
+  <script>
+    document.getElementById('backLink').addEventListener('click', (e) => {
+      e.preventDefault();
+      const _br = globalThis.browser || globalThis.chrome;
+      if (_br && _br.runtime && _br.runtime.openOptionsPage) {
+        _br.runtime.openOptionsPage();
+      } else {
+        window.location.href = '../settings/settings.html';
+      }
+    });
+  </script>
+</body>
+</html>

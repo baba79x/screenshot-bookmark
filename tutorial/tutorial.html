@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutorial Maker</title>
+  <link rel="stylesheet" href="tutorial.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <script src="../lib/browser-polyfill.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="brand-icon"><i class="ti ti-book"></i></div>
+      <span class="brand-name">Tutorial Maker</span>
+    </div>
+    <div class="header-right">
+      <button class="header-btn" id="exportMdBtn"><i class="ti ti-markdown"></i> Copy Markdown</button>
+      <button class="header-btn primary" id="exportPdfBtn"><i class="ti ti-file-type-pdf"></i> Export PDF</button>
+    </div>
+  </header>
+
+  <!-- Editor Container -->
+  <main class="editor-container" id="editorContainer">
+    
+    <!-- Title Block -->
+    <div class="tutorial-title-block">
+      <h1 class="tutorial-title" contenteditable="true" id="tutorialTitle">Untitled Tutorial</h1>
+      <p class="tutorial-desc" contenteditable="true" id="tutorialDesc">Add a brief description here...</p>
+    </div>
+
+    <!-- Blocks will be injected here -->
+    <div id="blocksContainer" class="blocks-container"></div>
+
+    <!-- Add Block at the bottom -->
+    <div class="add-block-bottom">
+      <button class="add-btn" data-type="text"><i class="ti ti-typography"></i> Add Text</button>
+      <button class="add-btn" data-type="image"><i class="ti ti-photo"></i> Upload Image</button>
+    </div>
+
+  </main>
+
+  <!-- Hidden file inputs -->
+  <input type="file" id="fileUploadBottom" accept="image/*" style="display:none;">
+  <input type="file" id="fileUploadInsert" accept="image/*" style="display:none;">
+
+  <!-- Floating Toolbar -->
+  <div class="floating-toolbar" id="floatingToolbar">
+    <button class="ft-btn" data-cmd="bold" title="Bold"><i class="ti ti-bold"></i></button>
+    <button class="ft-btn" data-cmd="italic" title="Italic"><i class="ti ti-italic"></i></button>
+    <div style="width:1px; background:#4B5563; margin:0 4px;"></div>
+    <button class="ft-btn" data-cmd="formatBlock" data-val="H2" title="Heading 2">H2</button>
+    <button class="ft-btn" data-cmd="formatBlock" data-val="H3" title="Heading 3">H3</button>
+  </div>
+
+  <script src="../lib/jspdf.min.js"></script>
+  <script src="tutorial.js"></script>
+</body>
+</html>

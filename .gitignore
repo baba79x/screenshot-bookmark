@@ -1,0 +1,39 @@
+# OS Files
+.DS_Store
+Thumbs.db
+*.swp
+*.log
+
+# Folders
+node_modules/
+dist/
+out/
+build/
+
+# IDEs
+.vscode/
+.idea/
+
+# Extension Specific
+*.pem
+*.crx
+*.zip
+*.map
+
+# Dev Artifacts
+assets/generate-icons.html
+assets/image (1).png
+assets/logoo.png
+TEST/
+temp/
+tmp/
+.tempmediaStorage/
+cws_audit_report.md
+final_release_report.md
+implementation_plan.md
+task.md
+walkthrough.md
+
+# Env
+.env
+.env.local

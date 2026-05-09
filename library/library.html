@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screenshot Bookmark — Library</title>
+  <link rel="icon" type="image/svg+xml" href="../icons/logo.svg">
+  <link rel="stylesheet" href="../lib/fonts/fonts.css">
+  <link rel="stylesheet" href="library.css">
+  <link rel="stylesheet" href="../content/styles/annotate.css">
+  <script src="../lib/browser-polyfill.js"></script>
+  <link rel="stylesheet" href="../lib/tabler-icons/tabler-icons.min.css">
+</head>
+<body>
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <img src="../icons/logo.svg" alt="Logo" style="width: 28px; height: 28px; border-radius: 6px;">
+      <span class="brand-name">Screenshot Bookmark</span>
+    </div>
+    <div class="topbar-center">
+      <div class="search-bar">
+        <i class="ti ti-search"></i>
+        <input type="text" id="searchInput" placeholder="Search screenshots…">
+      </div>
+    </div>
+    <div class="topbar-right" style="display:flex; gap:12px;">
+      <button class="topbar-btn" id="captureBtn" title="Capture current tab"><i class="ti ti-camera-plus"></i></button>
+      <button class="topbar-btn" id="settingsBtn" title="Open Settings"><i class="ti ti-settings"></i></button>
+    </div>
+  </header>
+
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="nav-label">Library</div>
+        <a class="nav-item active" data-view="all"><i class="ti ti-layout-grid"></i>All Screenshots</a>
+        <a class="nav-item" data-view="recent"><i class="ti ti-clock"></i>Recent</a>
+      </nav>
+
+      <div class="sidebar-section">
+        <div class="nav-label">Folders</div>
+        <div class="folder-tree" id="folderTree"></div>
+        <button class="add-folder-btn" id="addFolderBtn"><i class="ti ti-folder-plus"></i>New folder</button>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="nav-label">Tags</div>
+        <div class="tag-cloud" id="tagCloud"></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="nav-label">Stats</div>
+        <div class="stats">
+          <div class="stat-row"><span>Total saved</span><strong id="statTotal">0</strong></div>
+          <div class="stat-row"><span>This week</span><strong id="statWeek">0</strong></div>
+          <div class="stat-row"><span>Broken links</span><strong id="statBroken" class="danger">0</strong></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Grid -->
+    <main class="main">
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-chips" id="filterChips">
+          <button class="chip active" data-filter="all">All</button>
+          <button class="chip" data-filter="today">Today</button>
+          <button class="chip" data-filter="week">This Week</button>
+          <button class="chip" data-filter="broken">Broken Links</button>
+        </div>
+        <div class="sort-select" style="display:flex; gap:12px; align-items:center;">
+          <button id="selectAllBtn" class="small-btn outline"><i class="ti ti-checkbox"></i>Select All</button>
+          <select id="sortSelect">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="domain">By domain</option>
+            <option value="folder">By folder</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Broken Link Banner -->
+      <div class="broken-banner" id="brokenBanner" style="display:none;">
+        <i class="ti ti-alert-circle"></i>
+        <span id="brokenCount"></span>
+        <button class="banner-action" id="reviewBroken">Review</button>
+        <button class="banner-dismiss" id="dismissBanner"><i class="ti ti-x"></i></button>
+      </div>
+
+      <!-- Healthy Strip -->
+      <div class="healthy-strip" id="healthyStrip" style="display:none;">
+        <i class="ti ti-circle-check"></i>
+        <span id="healthyCount"></span>
+      </div>
+
+      <!-- Bulk Bar -->
+      <div class="bulk-bar" id="bulkBar" style="display:none;">
+        <div class="bulk-check"><i class="ti ti-check"></i></div>
+        <span class="bulk-count" id="bulkCount">0 selected</span>
+        <div class="bulk-actions">
+          <button class="bulk-btn" id="bulkMove"><i class="ti ti-folder"></i>Move to</button>
+          <button class="bulk-btn" id="bulkTag"><i class="ti ti-tag"></i>Add tag</button>
+          <button class="bulk-btn" id="bulkOpenLinks"><i class="ti ti-external-link"></i>Open Links</button>
+          <button class="bulk-btn" id="bulkTutorial"><i class="ti ti-book"></i>Create Tutorial</button>
+          <button class="bulk-btn" id="bulkExport"><i class="ti ti-download"></i>Export ZIP</button>
+          <button class="bulk-btn" id="bulkExportPdf"><i class="ti ti-file-type-pdf"></i>Export PDF</button>
+          <button class="bulk-btn danger" id="bulkDelete"><i class="ti ti-trash"></i>Delete</button>
+        </div>
+        <button class="bulk-cancel" id="bulkCancel">Cancel</button>
+      </div>
+
+      <!-- Grid -->
+      <div class="screenshot-grid" id="screenshotGrid"></div>
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <i class="ti ti-camera-off"></i>
+        <h3>No screenshots yet</h3>
+        <p>Right-click any page and select "📷 Capture" or press <kbd>Ctrl+Shift+S</kbd></p>
+      </div>
+    </main>
+  </div>
+
+  <!-- Detail Pane (slide from right) -->
+  <div class="detail-overlay" id="detailOverlay" style="display:none;">
+    <div class="detail-pane" id="detailPane">
+      <div class="detail-header">
+        <button class="detail-back" id="detailClose"><i class="ti ti-arrow-left"></i></button>
+        <h2 class="detail-title" id="detailTitle" contenteditable="true">Page Title</h2>
+      </div>
+      <div class="detail-preview" id="detailPreview">
+        <img id="detailImage" src="" alt="Screenshot">
+      </div>
+      <div class="detail-meta">
+        <div class="meta-row"><i class="ti ti-link"></i><a id="detailUrl" href="#" target="_blank"></a><button class="icon-btn" id="copyUrl"><i class="ti ti-copy"></i></button></div>
+        <div class="meta-row"><i class="ti ti-external-link"></i><button class="text-btn" id="visitSite">Visit site</button></div>
+        <div class="meta-row"><i class="ti ti-clock"></i><span id="detailDate"></span></div>
+        <div class="meta-row"><i class="ti ti-capture"></i><span id="detailType"></span></div>
+        <div class="meta-row"><i class="ti ti-folder"></i><select id="detailFolder" class="meta-select"><option value="">No folder</option></select></div>
+        <div class="meta-row"><i class="ti ti-tag"></i><div class="detail-tags" id="detailTags"></div></div>
+        <div class="tag-input-row">
+          <input type="text" id="tagInput" placeholder="Add tag…">
+          <button id="tagAddBtn" class="small-btn">Add</button>
+        </div>
+        <div class="meta-row" id="annotationRow" style="display:none;"><i class="ti ti-pencil"></i><span>Has annotations</span></div>
+        <div class="meta-row"><i class="ti ti-file-download"></i><span id="detailFile" class="detail-file"></span></div>
+      </div>
+      <div class="detail-actions">
+        <button class="action-btn" id="editBtn"><i class="ti ti-pencil"></i>Edit</button>
+        <button class="action-btn" id="copyMdBtn"><i class="ti ti-markdown"></i>Copy as markdown</button>
+        <button class="action-btn" id="exportBtn"><i class="ti ti-download"></i>Download Image</button>
+        <button class="action-btn" id="exportPdfBtn"><i class="ti ti-file-type-pdf"></i>Download PDF</button>
+        <button class="action-btn danger" id="deleteBtn"><i class="ti ti-trash"></i>Delete</button>
+      </div>
+      <div class="copied-pill" id="copiedPill" style="display:none;"><i class="ti ti-circle-check"></i> Copied to clipboard</div>
+    </div>
+  </div>
+
+  <script src="../lib/zip-export.js"></script>
+  <script src="../lib/jspdf.min.js"></script>
+  <script src="../content/annotate.js"></script>
+  <script src="library.js"></script>
+</body>
+</html>

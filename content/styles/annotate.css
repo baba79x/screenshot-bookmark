@@ -1,0 +1,170 @@
+/* ── Annotation Mode Overlay ── */
+
+.sb-annotation-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 2147483646;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  animation: sbFadeIn 0.2s ease;
+}
+
+@keyframes sbFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Toolbar ── */
+.sb-anno-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: #1a1a2e;
+  border-bottom: 1px solid #333360;
+  flex-shrink: 0;
+}
+
+.sb-anno-btn {
+  width: 32px; height: 32px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: none;
+  background: transparent;
+  color: #9FA3C8;
+  font-size: 16px;
+  transition: all 0.15s ease;
+}
+
+.sb-anno-btn:hover { background: rgba(255,255,255,0.08); color: #c8ccf0; }
+.sb-anno-btn.active { background: #185FA5; color: white; }
+
+.sb-anno-sep {
+  width: 1px; height: 20px;
+  background: #333360;
+  margin: 0 4px;
+}
+
+.sb-color-dot {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.sb-color-dot.selected { border-color: white; }
+.sb-color-dot:hover { border-color: rgba(255,255,255,0.5); }
+
+.sb-anno-label {
+  font-size: 11px;
+  color: #9FA3C8;
+  margin-left: auto;
+  margin-right: 8px;
+}
+
+/* ── Canvas Area ── */
+.sb-anno-canvas-wrap {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.sb-anno-canvas-container {
+  position: relative;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sb-anno-bg-img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100vh - 120px);
+  user-select: none;
+  pointer-events: none;
+}
+
+.sb-anno-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  cursor: crosshair;
+}
+
+/* ── Footer Actions ── */
+.sb-anno-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #1a1a2e;
+  border-top: 1px solid #333360;
+}
+
+.sb-anno-action {
+  font-size: 12px;
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 1px solid #333360;
+  background: transparent;
+  color: #9FA3C8;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex; align-items: center; gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.sb-anno-action:hover { background: rgba(255,255,255,0.05); color: #e8e8f0; }
+
+.sb-anno-action.primary {
+  background: #185FA5;
+  border-color: #185FA5;
+  color: #E6F1FB;
+}
+
+.sb-anno-action.primary:hover { background: #1a6abb; }
+
+/* ── Sticky Note ── */
+.sb-sticky-note {
+  position: absolute;
+  min-width: 100px;
+  max-width: 200px;
+  background: #FAEEDA;
+  border: 1px solid #EF9F27;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 11px;
+  color: #633806;
+  cursor: move;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.sb-sticky-note textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #633806;
+  font-size: 11px;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  min-height: 30px;
+}
+
+.sb-sticky-note .sb-sticky-close {
+  position: absolute;
+  top: 2px; right: 4px;
+  cursor: pointer;
+  font-size: 10px;
+  color: #633806;
+  opacity: 0.6;
+}
+
+.sb-sticky-note .sb-sticky-close:hover { opacity: 1; }

@@ -1,0 +1,36 @@
+.sb-region-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 2147483647;
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+}
+
+.sb-region-backdrop {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.sb-region-box {
+  position: absolute;
+  border: 1px dashed #fff;
+  background: transparent;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  display: none;
+}
+
+.sb-region-info {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: sans-serif;
+  font-size: 12px;
+  pointer-events: none;
+  display: none;
+  white-space: nowrap;
+}

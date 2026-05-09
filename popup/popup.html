@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screenshot Bookmark</title>
+  <link rel="icon" type="image/svg+xml" href="../icons/logo.svg">
+  <link rel="stylesheet" href="../lib/fonts/fonts.css">
+  <link rel="stylesheet" href="popup.css">
+  <script src="../lib/browser-polyfill.js"></script>
+  <link rel="stylesheet" href="../lib/tabler-icons/tabler-icons.min.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="header-left">
+      <img src="../icons/logo.svg" alt="Logo" style="width: 24px; height: 24px; border-radius: 6px;">
+      <span class="brand-name">Screenshot Bookmark</span>
+    </div>
+  </header>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <i class="ti ti-search"></i>
+    <input type="text" id="searchInput" placeholder="Search screenshots…" autocomplete="off">
+  </div>
+
+  <!-- Filter Chips -->
+  <div class="filter-chips" id="filterChips">
+    <button class="chip active" data-filter="all">All</button>
+    <button class="chip" data-filter="today">Today</button>
+    <button class="chip" data-filter="week">This Week</button>
+  </div>
+
+  <!-- Broken Link Banner -->
+  <div class="broken-banner" id="brokenBanner" style="display:none;">
+    <i class="ti ti-alert-circle"></i>
+    <span id="brokenCount">0 saved pages are no longer reachable</span>
+    <button class="banner-btn" id="reviewBroken">Review</button>
+    <button class="banner-dismiss" id="dismissBroken"><i class="ti ti-x"></i></button>
+  </div>
+
+  <!-- Bulk Action Bar -->
+  <div class="bulk-bar" id="bulkBar" style="display:none;">
+    <div class="bulk-check"><i class="ti ti-check"></i></div>
+    <span class="bulk-count" id="bulkCount">0 selected</span>
+    <div class="bulk-actions">
+      <button class="bulk-btn" id="bulkMove"><i class="ti ti-folder"></i>Move to</button>
+      <button class="bulk-btn" id="bulkTag"><i class="ti ti-tag"></i>Add tag</button>
+      <button class="bulk-btn" id="bulkExport"><i class="ti ti-download"></i>Export ZIP</button>
+      <button class="bulk-btn danger" id="bulkDelete"><i class="ti ti-trash"></i>Delete</button>
+    </div>
+    <button class="bulk-cancel" id="bulkCancel">Cancel</button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Folders</div>
+        <ul class="folder-tree" id="folderTree">
+          <li class="folder-item active" data-folder="">
+            <i class="ti ti-folder"></i> All Screenshots
+          </li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Tags</div>
+        <div class="tag-cloud" id="tagCloud">
+          <span class="empty-label">No tags yet</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Screenshot Grid -->
+    <div class="grid-container">
+      <div class="screenshot-grid" id="screenshotGrid"></div>
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <i class="ti ti-camera-off"></i>
+        <p>No screenshots yet</p>
+        <span>Right-click any page or press <kbd>Ctrl+Shift+S</kbd></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Pane -->
+  <div class="detail-pane" id="detailPane">
+    <div class="detail-header">
+      <button class="detail-close" id="detailClose"><i class="ti ti-x"></i></button>
+      <h3 class="detail-title" id="detailTitle" contenteditable="true">Page Title</h3>
+    </div>
+    <div class="detail-preview" id="detailPreview">
+      <img id="detailImage" src="" alt="Screenshot preview">
+    </div>
+    <div class="detail-meta">
+      <div class="meta-row">
+        <i class="ti ti-link"></i>
+        <a id="detailUrl" href="#" target="_blank" class="detail-url">URL</a>
+        <button class="icon-btn" id="copyUrl" title="Copy URL"><i class="ti ti-copy"></i></button>
+      </div>
+      <div class="meta-row">
+        <i class="ti ti-clock"></i>
+        <span id="detailDate">Date</span>
+      </div>
+      <div class="meta-row">
+        <i class="ti ti-capture"></i>
+        <span id="detailType">Capture type</span>
+      </div>
+      <div class="meta-row">
+        <i class="ti ti-file-download"></i>
+        <span id="detailFile" class="detail-file" title="Saved to Downloads folder"></span>
+      </div>
+      <div class="meta-row">
+        <i class="ti ti-folder"></i>
+        <select id="detailFolder" class="detail-select">
+          <option value="">No folder</option>
+        </select>
+      </div>
+      <div class="meta-row">
+        <i class="ti ti-tag"></i>
+        <div class="detail-tags" id="detailTags"></div>
+      </div>
+      <div class="detail-tag-input">
+        <input type="text" id="detailTagInput" placeholder="Add tag…">
+        <button id="detailTagAdd" class="icon-btn"><i class="ti ti-plus"></i></button>
+      </div>
+    </div>
+    <div class="detail-actions">
+      <button class="detail-btn" id="detailVisit"><i class="ti ti-external-link"></i>Visit site</button>
+      <button class="detail-btn" id="detailCopyMd"><i class="ti ti-markdown"></i>Copy as markdown</button>
+      <button class="detail-btn" id="detailExport"><i class="ti ti-download"></i>Download ZIP</button>
+      <button class="detail-btn danger" id="detailDelete"><i class="ti ti-trash"></i>Delete</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <button class="footer-btn primary" id="captureBtn" title="Capture viewport">
+      <i class="ti ti-camera"></i>
+    </button>
+    <button class="footer-btn primary" id="captureRegionBtn" title="Capture region" style="background: var(--accent); color: white;">
+      <i class="ti ti-focus-2"></i>
+    </button>
+    <button class="footer-btn primary" id="captureFullBtn" title="Capture full page" style="background: var(--success); color: white;">
+      <i class="ti ti-file-text"></i>
+    </button>
+    <button class="footer-btn" id="libraryBtn" title="Open full library">
+      <i class="ti ti-layout-grid"></i>
+    </button>
+    <button class="footer-btn" id="settingsBtn" title="Settings">
+      <i class="ti ti-settings"></i>
+    </button>
+  </footer>
+
+  <script src="../lib/zip-export.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
