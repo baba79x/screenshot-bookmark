@@ -12,6 +12,7 @@ let activeFolder = '';
 let activeTags   = [];
 let activeSort   = 'newest';
 let currentDetailId = null;
+let _notesDebounce = null;
 
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
@@ -55,6 +56,8 @@ function applyFilters() {
   } else if (activeFilter === 'week') {
     const s = new Date(now); s.setDate(s.getDate() - 7);
     e = e.filter(x => new Date(x.capturedAt) >= s);
+  } else if (activeFilter === 'starred') {
+    e = e.filter(x => x.starred === true);
   } else if (activeFilter === 'broken') {
     e = e.filter(x => x.linkStatus === 'broken');
   }
@@ -63,7 +66,8 @@ function applyFilters() {
   if (q) e = e.filter(x =>
     (x.pageTitle||'').toLowerCase().includes(q) ||
     (x.sourceUrl||'').toLowerCase().includes(q) ||
-    (x.tags||[]).some(t => t.toLowerCase().includes(q))
+    (x.tags||[]).some(t => t.toLowerCase().includes(q)) ||
+    (x.notes||'').toLowerCase().includes(q)
   );
 
   if (activeSort === 'newest') e.sort((a,b) => new Date(b.capturedAt)-new Date(a.capturedAt));
@@ -82,7 +86,7 @@ function renderGrid() {
   if (!filtered.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
   grid.innerHTML = filtered.map(e => `
-    <div class="card ${selectedIds.has(e.id)?'selected':''}" data-id="${e.id}">
+    <div class="card ${selectedIds.has(e.id)?'selected':''} ${e.starred?'starred':''}" data-id="${e.id}">
       <div class="card-checkbox" data-action="select">
         ${selectedIds.has(e.id)?'<i class="ti ti-check"></i>':''}
       </div>
@@ -97,10 +101,12 @@ function renderGrid() {
         <div class="card-domain">${domain(e.sourceUrl)}</div>
         <div class="card-meta">
           <span class="card-time">${timeAgo(e.capturedAt)}</span>
+          ${e.starred?'<i class="ti ti-star-filled card-starred-icon" title="Starred"></i>':''}
           ${e.folderPath?`<span class="card-folder">${esc(e.folderPath)}</span>`:''}
         </div>
       </div>
       <div class="card-hover">
+        <button class="hover-btn btn-star ${e.starred?'active':''}" data-action="star" title="${e.starred?'Unstar':'Star'}"><i class="ti ${e.starred?'ti-star-filled':'ti-star'}"></i></button>
         <button class="hover-btn" data-action="edit" title="Edit"><i class="ti ti-pencil"></i></button>
         <button class="hover-btn" data-action="visit" title="Visit"><i class="ti ti-external-link"></i></button>
         <button class="hover-btn" data-action="copy-link" title="Copy URL"><i class="ti ti-link"></i></button>
@@ -149,6 +155,7 @@ function renderStats() {
   $('#statTotal').textContent = allEntries.length;
   const wk = new Date(); wk.setDate(wk.getDate()-7);
   $('#statWeek').textContent = allEntries.filter(e=>new Date(e.capturedAt)>=wk).length;
+  $('#statStarred').textContent = allEntries.filter(e=>e.starred===true).length;
   const bn = allEntries.filter(e=>e.linkStatus==='broken').length;
   $('#statBroken').textContent = bn;
   $('#statBroken').className = bn > 0 ? 'danger' : '';
@@ -223,6 +230,7 @@ function bindEvents() {
     const id   = card.dataset.id;
     const action = e.target.closest('[data-action]')?.dataset.action;
     if (action==='select' || e.shiftKey) { toggleSel(id); return; }
+    if (action==='star')      { toggleStar(id); return; }
     if (action==='visit')     { visitEntry(id); return; }
     if (action==='copy-link') { copyLink(id); return; }
     if (action==='copy-md')   { copyMd(id); return; }
@@ -338,6 +346,44 @@ function bindEvents() {
     if (currentDetailId) editEntry(currentDetailId);
   });
 
+  $('#detailStar')?.addEventListener('click', () => {
+    if (currentDetailId) toggleStar(currentDetailId);
+  });
+
+  $('#recaptureBtn')?.addEventListener('click', () => {
+    const e = findEntry(currentDetailId);
+    if (!e) return;
+    const btn = $('#recaptureBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-refresh"></i>Opening…';
+    _browser.runtime.sendMessage({ action: 'recaptureUrl', url: e.sourceUrl })
+      .then(res => {
+        if (res?.error) { alert(res.error); }
+      })
+      .catch(() => { alert('Recapture failed. Make sure the URL is reachable.'); })
+      .finally(() => {
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="ti ti-refresh"></i>Recapture';
+        }, 2000);
+      });
+  });
+
+  $('#detailNotes')?.addEventListener('input', () => {
+    clearTimeout(_notesDebounce);
+    _notesDebounce = setTimeout(async () => {
+      const e = findEntry(currentDetailId);
+      if (!e) return;
+      e.notes = ($('#detailNotes')?.value || '').slice(0, 5000);
+      await saveEntry(e);
+      const saved = $('#notesSaved');
+      if (saved) {
+        saved.textContent = 'Saved';
+        setTimeout(() => { if (saved) saved.textContent = ''; }, 1500);
+      }
+    }, 500);
+  });
+
   function editEntry(id) {
     _browser.runtime.sendMessage({ action: 'editEntryWithAnnotation', entryId: id })
       .catch(err => alert('Could not open annotation mode: ' + (err?.message || err)));
@@ -404,6 +450,19 @@ function openDetail(id) {
   
   $('#detailDate').textContent = new Date(e.capturedAt).toLocaleString();
   $('#detailType').textContent = e.captureType === 'full_page' ? 'Full page' : 'Viewport';
+
+  // Star button
+  _updateDetailStar(e.starred === true);
+
+  // Notes
+  const notesEl = $('#detailNotes');
+  if (notesEl) notesEl.value = e.notes || '';
+  const notesSaved = $('#notesSaved');
+  if (notesSaved) notesSaved.textContent = '';
+
+  // Recapture button — only show for http/https URLs
+  const rcBtn = $('#recaptureBtn');
+  if (rcBtn) rcBtn.style.display = /^https?:/.test(e.sourceUrl) ? 'flex' : 'none';
 
   // Annotation badge
   const ar = $('#annotationRow');
@@ -493,6 +552,32 @@ async function saveEntry(entry) {
   const idx = r.screenshotIndex || {};
   idx[entry.id] = entry;
   await _browser.storage.local.set({ screenshotIndex: idx });
+}
+
+async function toggleStar(id) {
+  const e = findEntry(id);
+  if (!e) return;
+  e.starred = !e.starred;
+  await saveEntry(e);
+  await load();
+  render();
+  if (currentDetailId === id) _updateDetailStar(e.starred);
+}
+
+function _updateDetailStar(starred) {
+  const btn = $('#detailStar');
+  if (!btn) return;
+  const icon = btn.querySelector('i');
+  if (!icon) return;
+  if (starred) {
+    icon.className = 'ti ti-star-filled';
+    btn.classList.add('starred');
+    btn.title = 'Unstar this screenshot';
+  } else {
+    icon.className = 'ti ti-star';
+    btn.classList.remove('starred');
+    btn.title = 'Star this screenshot';
+  }
 }
 
 // ── Helpers ──

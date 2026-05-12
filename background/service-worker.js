@@ -7,6 +7,9 @@ import { embedMetadata } from '../lib/image-metadata.js';
 
 const _browser = globalThis.browser || globalThis.chrome;
 
+// Tabs opened by Quick Recapture — captured automatically once they finish loading.
+const _pendingRecapture = new Set();
+
 // ── Install ──────────────────────────────────────────────────────
 _browser.runtime.onInstalled.addListener(() => {
   _browser.contextMenus.removeAll(() => {
@@ -261,6 +264,16 @@ _browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           sendResponse({ success: true });
           break;
 
+        case 'recaptureUrl': {
+          const { url } = msg;
+          try { new URL(url); } catch { sendResponse({ error: 'Invalid URL' }); break; }
+          if (!/^https?:/.test(url)) { sendResponse({ error: 'Only http/https URLs can be recaptured' }); break; }
+          const newTab = await _browser.tabs.create({ url, active: true });
+          _pendingRecapture.add(newTab.id);
+          sendResponse({ success: true });
+          break;
+        }
+
         default:
           sendResponse({ error: 'Unknown: ' + msg.action });
       }
@@ -272,10 +285,16 @@ _browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   return true; // async response
 });
 
-// ── Badge ────────────────────────────────────────────────────────
+// ── Badge + Quick Recapture ───────────────────────────────────────
 _browser.tabs.onUpdated.addListener(async (tabId, change, tab) => {
-  if (change.status === 'complete' && tab.url) await setBadge(tabId, tab.url);
+  if (change.status !== 'complete' || !tab.url) return;
+  await setBadge(tabId, tab.url);
+  if (_pendingRecapture.has(tabId)) {
+    _pendingRecapture.delete(tabId);
+    await startCapture(tab, 'viewport', true);
+  }
 });
+_browser.tabs.onRemoved.addListener(tabId => { _pendingRecapture.delete(tabId); });
 _browser.tabs.onActivated.addListener(async ({ tabId }) => {
   try { const t = await _browser.tabs.get(tabId); if (t.url) await setBadge(t.id, t.url); } catch { }
 });

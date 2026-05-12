@@ -56,6 +56,7 @@
         <div class="stats">
           <div class="stat-row"><span>Total saved</span><strong id="statTotal">0</strong></div>
           <div class="stat-row"><span>This week</span><strong id="statWeek">0</strong></div>
+          <div class="stat-row"><span>Starred</span><strong id="statStarred">0</strong></div>
           <div class="stat-row"><span>Broken links</span><strong id="statBroken" class="danger">0</strong></div>
         </div>
       </div>
@@ -69,6 +70,7 @@
           <button class="chip active" data-filter="all">All</button>
           <button class="chip" data-filter="today">Today</button>
           <button class="chip" data-filter="week">This Week</button>
+          <button class="chip" data-filter="starred"><i class="ti ti-star"></i> Starred</button>
           <button class="chip" data-filter="broken">Broken Links</button>
         </div>
         <div class="sort-select" style="display:flex; gap:12px; align-items:center;">
@@ -128,6 +130,7 @@
       <div class="detail-header">
         <button class="detail-back" id="detailClose"><i class="ti ti-arrow-left"></i></button>
         <h2 class="detail-title" id="detailTitle" contenteditable="true">Page Title</h2>
+        <button class="icon-btn detail-star-btn" id="detailStar" title="Star this screenshot"><i class="ti ti-star"></i></button>
       </div>
       <div class="detail-preview" id="detailPreview">
         <img id="detailImage" src="" alt="Screenshot">
@@ -146,8 +149,14 @@
         <div class="meta-row" id="annotationRow" style="display:none;"><i class="ti ti-pencil"></i><span>Has annotations</span></div>
         <div class="meta-row"><i class="ti ti-file-download"></i><span id="detailFile" class="detail-file"></span></div>
       </div>
+      <div class="detail-notes">
+        <div class="notes-label"><i class="ti ti-notes"></i>Notes</div>
+        <textarea id="detailNotes" placeholder="Add private notes…" maxlength="5000"></textarea>
+        <div class="notes-saved" id="notesSaved"></div>
+      </div>
       <div class="detail-actions">
         <button class="action-btn" id="editBtn"><i class="ti ti-pencil"></i>Edit</button>
+        <button class="action-btn" id="recaptureBtn"><i class="ti ti-refresh"></i>Recapture</button>
         <button class="action-btn" id="copyMdBtn"><i class="ti ti-markdown"></i>Copy as markdown</button>
         <button class="action-btn" id="exportBtn"><i class="ti ti-download"></i>Download Image</button>
         <button class="action-btn" id="exportPdfBtn"><i class="ti ti-file-type-pdf"></i>Download PDF</button>
