@@ -117,6 +117,55 @@ _browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           break;
         }
 
+        // Edit an existing entry: load its image from IDB and open annotation
+        // mode on the active non-extension tab with mode:'edit'.
+        case 'editEntryWithAnnotation': {
+          const { entryId } = msg;
+          const ri = await _browser.storage.local.get('screenshotIndex');
+          const entry = (ri.screenshotIndex || {})[entryId];
+          if (!entry) { sendResponse({ error: 'Entry not found' }); break; }
+
+          // Fetch full image from IDB
+          const dataUrl = await new Promise(resolve => {
+            const req = indexedDB.open('ScreenshotBookmarkDB', 1);
+            req.onsuccess = ev => {
+              const db = ev.target.result;
+              if (!db.objectStoreNames.contains('screenshots')) { resolve(null); return; }
+              const r = db.transaction('screenshots', 'readonly').objectStore('screenshots').get(entryId);
+              r.onsuccess = () => resolve(r.result?.dataUrl || null);
+              r.onerror   = () => resolve(null);
+            };
+            req.onerror = () => resolve(null);
+          });
+          if (!dataUrl) { sendResponse({ error: 'Image not found in cache' }); break; }
+
+          // Find the active non-extension tab to host the annotation overlay
+          const [activeTab] = await _browser.tabs.query({ active: true, currentWindow: true });
+          if (!activeTab || /^(chrome|chrome-extension|moz-extension|about|edge):/.test(activeTab.url)) {
+            sendResponse({ error: 'Navigate to a web page first, then re-open the library to edit.' });
+            break;
+          }
+
+          try {
+            await _browser.scripting.insertCSS({ target: { tabId: activeTab.id }, files: ['content/styles/annotate.css'] });
+            await _browser.scripting.executeScript({ target: { tabId: activeTab.id }, files: ['content/annotate.js'] });
+          } catch(e) {}
+          await sleep(80);
+          try {
+            await _browser.tabs.sendMessage(activeTab.id, {
+              action: 'openAnnotationMode',
+              mode: 'edit',
+              tempId: entryId,
+              dataUrl,
+              pageUrl: entry.sourceUrl,
+              pageTitle: entry.pageTitle,
+              captureType: entry.captureType
+            });
+          } catch(e) {}
+          sendResponse({ success: true });
+          break;
+        }
+
         case 'saveEditedImage': {
           const { entryId, annotatedDataUrl } = msg;
           const r = await _browser.storage.local.get('screenshotIndex');
@@ -139,21 +188,17 @@ _browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             req.onerror = () => reject(req.error);
           });
 
-          // Re-embed metadata
-          let format = entry.savedFilename.endsWith('.jpeg') || entry.savedFilename.endsWith('.jpg') ? 'jpeg' : 'png';
-          
-          let blobUrl;
+          // Re-embed metadata into the annotated image
+          let downloadUrl = annotatedDataUrl;
           try {
-            const blob = await (await fetch(annotatedDataUrl)).blob();
-            const taggedBlob = await embedMetadata(blob, format, entry);
-            blobUrl = URL.createObjectURL(taggedBlob);
+            downloadUrl = embedMetadata(annotatedDataUrl, entry);
           } catch (e) {
-            blobUrl = annotatedDataUrl; // fallback
+            console.error('[SB] Failed to embed metadata on edit:', e);
           }
 
           // Overwrite the file on disk
           await _browser.downloads.download({
-            url: blobUrl,
+            url: downloadUrl,
             filename: entry.savedFilename,
             saveAs: false,
             conflictAction: 'overwrite'
@@ -631,12 +676,13 @@ async function getSettings() {
 async function runLinkCheck() {
   const settings = await getSettings();
   if (settings.linkCheckFrequency === 'off') return;
+  const cacheDuration = settings.linkCheckFrequency === 'weekly' ? 7 * 24 * 3600e3 : 12 * 3600e3;
   const r = await _browser.storage.local.get('screenshotIndex');
   const index = r.screenshotIndex || {};
   let changed = false;
   for (const e of Object.values(index)) {
     if (!isCheckable(e.sourceUrl)) continue;
-    if (e.linkCheckedAt && Date.now() - new Date(e.linkCheckedAt).getTime() < 12 * 3600e3) continue;
+    if (e.linkCheckedAt && Date.now() - new Date(e.linkCheckedAt).getTime() < cacheDuration) continue;
     try {
       const resp = await fetch(e.sourceUrl, { method: 'HEAD', mode: 'no-cors', signal: AbortSignal.timeout(8000) });
       index[e.id].linkStatus = (resp.ok || resp.type === 'opaque') ? 'healthy' : 'broken';

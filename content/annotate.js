@@ -606,17 +606,21 @@
   }
 
   async function doSave() {
-    // Bake everything onto a final canvas
+    // After a crop, bgImg is hidden and canvas holds the merged cropped content.
+    const isCropped = bgImg.style.display === 'none';
     const fc = document.createElement('canvas');
-    fc.width = bgImg.naturalWidth; fc.height = bgImg.naturalHeight;
+    fc.width  = isCropped ? canvas.width  : bgImg.naturalWidth;
+    fc.height = isCropped ? canvas.height : bgImg.naturalHeight;
     const fctx = fc.getContext('2d', { willReadFrequently: true });
-    
-    if (bgImg.style.filter === 'grayscale(100%)') {
-      fctx.filter = 'grayscale(100%)';
+
+    if (!isCropped) {
+      if (bgImg.style.filter === 'grayscale(100%)') {
+        fctx.filter = 'grayscale(100%)';
+      }
+      fctx.drawImage(bgImg, 0, 0);
+      fctx.filter = 'none';
     }
-    fctx.drawImage(bgImg, 0, 0);
-    fctx.filter = 'none';
-    
+
     fctx.drawImage(canvas, 0, 0);
 
     // Bake sticky notes and text objects

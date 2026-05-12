@@ -339,34 +339,8 @@ function bindEvents() {
   });
 
   function editEntry(id) {
-    const e = findEntry(id);
-    if (!e) return;
-    const req = indexedDB.open('ScreenshotBookmarkDB', 1);
-    req.onsuccess = ev => {
-      const db = ev.target.result;
-      const tx = db.transaction('screenshots', 'readonly');
-      const r = tx.objectStore('screenshots').get(e.id);
-      r.onsuccess = () => {
-        if (r.result && r.result.dataUrl) {
-          _browser.runtime.sendMessage({
-            action: 'switchToAnnotation',
-            tempId: e.id,
-            pageUrl: e.sourceUrl,
-            pageTitle: e.pageTitle,
-            captureType: e.captureType
-          }).then(() => {
-            setTimeout(() => {
-              window.postMessage({
-                action: 'openAnnotationMode',
-                mode: 'edit',
-                tempId: e.id,
-                dataUrl: r.result.dataUrl
-              }, location.origin);
-            }, 150);
-          });
-        }
-      };
-    };
+    _browser.runtime.sendMessage({ action: 'editEntryWithAnnotation', entryId: id })
+      .catch(err => alert('Could not open annotation mode: ' + (err?.message || err)));
   }
 
   // Tag input — library.html uses id="tagInput" and id="tagAddBtn"
